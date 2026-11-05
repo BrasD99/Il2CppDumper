@@ -11,10 +11,20 @@ Unity il2cpp reverse engineer
 * Complete DLL restore (except code), can be used to extract `MonoBehaviour` and `MonoScript`
 * Supports ELF, ELF64, Mach-O, PE, NSO and WASM format
 * Supports Unity 5.3 - 2022.2
+* Supports Unity 6 WebGL binaries whose registration tables were constant-folded by wasm-opt (see below)
 * Supports generate IDA, Ghidra and Binary Ninja scripts to help them better analyze il2cpp files
 * Supports generate structures header file
 * Supports Android memory dumped `libil2cpp.so` file to bypass protection
 * Support bypassing simple PE protection
+
+## Unity 6 WebAssembly
+
+wasm-opt inlines `CodeRegistration` and `MetadataRegistration`, so auto mode reports both addresses as 0. This fork rebuilds them:
+
+* bulk-memory data segments (`flags` + `i32.const` offset)
+* pointer tables recovered from `i32.const` bases in the code section (`codeGenModules`, `types`, `fieldOffsets`, `genericInsts`)
+* `fieldOffsets` checked against metadata field counts, so an interior hole of the real array is not chosen
+* `methodSpecs` recovered from `i32.const 12; i32.mul` bases, so struct generation and dummy DLLs finish
 
 ## Usage
 

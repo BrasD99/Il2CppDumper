@@ -207,6 +207,10 @@ namespace Il2CppDumper
             Console.WriteLine("Searching...");
             try
             {
+                if (il2Cpp is WebAssemblyMemory wasmMemory)
+                {
+                    wasmMemory.SetTypeFieldCounts(metadata.typeDefs.Select(x => (int)x.field_count).ToArray());
+                }
                 var flag = il2Cpp.PlusSearch(metadata.methodDefs.Count(x => x.methodIndex >= 0), metadata.typeDefs.Length, metadata.imageDefs.Length);
                 if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
                 {
